@@ -259,3 +259,13 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+/RealTimeEqualizer/Engine/
+/RealTimeEqualizer/Example/
+/RealTimeEqualizer.sln
+/RealTimeEqualizer/RealTimeEqualizer.vcxproj
+/RealTimeEqualizer/RealTimeEqualizer.vcxproj.filters
+/RealTimeEqualizer/Resource.rc
+
+
+

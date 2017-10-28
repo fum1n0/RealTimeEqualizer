@@ -21,7 +21,7 @@ FilterEditorFreq::FilterEditorFreq() {
 	gui.horizontalLine(L"hr").style.color = Color(127);
 		
 	
-	X = std::vector<double>(pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
+	X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
 	
 	font = Font(20);
 
@@ -44,7 +44,7 @@ void FilterEditorFreq::isReaction() {
 	if (gui.button(L"filter").pushed); // Filter Update
 
 
-	if (gui.slider(L"degree").hasChanged)X = std::vector<double>(pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
+	if (gui.slider(L"degree").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
 
 	
 	if (Input::MouseL.pressed) {
@@ -124,13 +124,4 @@ void FilterEditorFreq::draw() {
 	}
 }
 
-
-std::vector<double> IFFT(std::vector<double> re) {
-
-
-
-
-
-
-}
 
