@@ -1,3 +1,4 @@
+#pragma once
 
 #include"../hpp/Interface.hpp"
 
@@ -25,7 +26,7 @@ Interface::Interface() {
 	
 	font = Font(20);
 
-
+	filter = std::make_shared<Filter>();
 }
 
 
@@ -41,7 +42,7 @@ void Interface::update() {
 void Interface::isReaction() {
 
 	
-	// if (gui.button(L"filter").pushed); // Filter Update
+	if (gui.button(L"filter").pushed)filter->update(); // Filter Update
 
 
 	if (gui.slider(L"degree").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);

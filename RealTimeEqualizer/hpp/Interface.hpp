@@ -1,15 +1,7 @@
 #pragma once
 
-#pragma once
-
-#include<Siv3D.hpp>
-#include<iostream>
-#include<vector>
-#include<unordered_map>
-#include<memory>
-#include<numeric>
-#include<HamFramework.hpp>
-#include <iomanip>
+#include"../hpp/Public.hpp"
+#include"../hpp/Filter.hpp"
 
 class Interface {
 
@@ -19,7 +11,7 @@ private:
 	GUI gui;
 	std::vector<double>X;
 	std::vector<double>signal;
-	std::vector<double>filter;
+	std::shared_ptr<Filter>filter;
 
 public:
 
