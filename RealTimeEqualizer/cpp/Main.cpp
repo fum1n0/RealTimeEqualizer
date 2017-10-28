@@ -1,5 +1,5 @@
 ﻿
-#include"../hpp/FilterEditorFreq.hpp"
+#include"../hpp/Interface.hpp"
 
 
 void Main(){
@@ -8,11 +8,11 @@ void Main(){
 	ScalableWindow::Setup(600, 480);
 	Window::SetTitle(L"Filter Editer");
 
-	std::shared_ptr<FilterEditorFreq>fef = std::make_shared<FilterEditorFreq>();
+	std::shared_ptr<Interface>ui = std::make_shared<Interface>();
 
 	while (System::Update()) {
 
-		fef->update();
+		ui->update();
 
 
 	}

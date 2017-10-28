@@ -1,8 +1,8 @@
 
-#include"../hpp/FilterEditorFreq.hpp"
+#include"../hpp/Interface.hpp"
 
 
-FilterEditorFreq::FilterEditorFreq() {
+Interface::Interface() {
 
 	gui = GUI(GUIStyle::Default);
 	gui.setTitle(L"Config");
@@ -29,7 +29,7 @@ FilterEditorFreq::FilterEditorFreq() {
 }
 
 
-void FilterEditorFreq::update() {
+void Interface::update() {
 
 	isReaction();
 	setText();
@@ -38,10 +38,10 @@ void FilterEditorFreq::update() {
 }
 
 
-void FilterEditorFreq::isReaction() {
+void Interface::isReaction() {
 
 	
-	if (gui.button(L"filter").pushed); // Filter Update
+	// if (gui.button(L"filter").pushed); // Filter Update
 
 
 	if (gui.slider(L"degree").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
@@ -65,14 +65,14 @@ void FilterEditorFreq::isReaction() {
 }
 
 
-void FilterEditorFreq::setText() {
+void Interface::setText() {
 	
 	gui.text(L"degree_num").text = Format(L"•ª‰ð”\: 2^", gui.slider(L"degree")._get_valueInt());
 	
 }
 
 
-int FilterEditorFreq::calcArea(int x) {
+int Interface::calcArea(int x) {
 
 	int index;
 	double resolution;
@@ -83,7 +83,7 @@ int FilterEditorFreq::calcArea(int x) {
 	return index;
 }
 
-void FilterEditorFreq::setCoefficient(int index) {
+void Interface::setCoefficient(int index) {
 
 	
 	if (index < 0 || X.size() <= index)return;
@@ -99,7 +99,7 @@ void FilterEditorFreq::setCoefficient(int index) {
 
 
 
-void FilterEditorFreq::draw() {
+void Interface::draw() {
 
 	double resolution_x = Window::Width() / (double)X.size();
 	std::string str;

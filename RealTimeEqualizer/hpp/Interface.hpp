@@ -11,7 +11,7 @@
 #include<HamFramework.hpp>
 #include <iomanip>
 
-class FilterEditorFreq {
+class Interface {
 
 private:
 
@@ -23,7 +23,7 @@ private:
 
 public:
 
-	FilterEditorFreq();
+	Interface();
 
 	void update();
 	void isReaction();

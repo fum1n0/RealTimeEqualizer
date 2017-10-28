@@ -272,3 +272,4 @@ __pycache__/
 # /RealTimeEqualizer/
 # !/RealTimeEqualizer/cpp/
 # !/RealTimeEqualizer/hpp/
+/RealTimeEqualizer/RealTimeEqualizer_log.html
