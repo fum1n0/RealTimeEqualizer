@@ -69,6 +69,12 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+*.ico
+*.rc
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
 
 # Chutzpah Test files
 _Chutzpah*
@@ -260,12 +266,9 @@ paket-files/
 __pycache__/
 *.pyc
 
-/RealTimeEqualizer/Engine/
-/RealTimeEqualizer/Example/
-/RealTimeEqualizer.sln
-/RealTimeEqualizer/RealTimeEqualizer.vcxproj
-/RealTimeEqualizer/RealTimeEqualizer.vcxproj.filters
-/RealTimeEqualizer/Resource.rc
+/RealTimeEqualizer/
+!/RealTimeEqualizer/cpp/
+!/RealTimeEqualizer/hpp/
 
 
 

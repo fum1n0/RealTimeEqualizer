@@ -32,6 +32,5 @@ public:
 	void setCoefficient(int);
 	void draw();
 
-	std::vector<double> IFFT(std::vector<double>);
 
 };
