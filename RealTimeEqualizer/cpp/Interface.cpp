@@ -16,23 +16,31 @@ Interface::Interface() {
 		
 
 	gui.addln(L"degree_num", GUIText::Create(L"", 300));
-	gui.add(L"degree", GUISlider::Create(5, 13, 7, 100));
+	gui.add(L"degree", GUISlider::Create(5, 11, 8, 100));
 
 	gui.add(L"hr", GUIHorizontalLine::Create(1));
 	gui.horizontalLine(L"hr").style.color = Color(127);
 		
-	
+	gui.addln(L"dimension_num", GUIText::Create(L"", 300));
+	gui.add(L"dimension", GUISlider::Create(5, 50, 10, 100));
+
+	gui.add(L"hr", GUIHorizontalLine::Create(1));
+	gui.horizontalLine(L"hr").style.color = Color(127);
+
+
 	X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
 	
 	font = Font(20);
 
-	filter = std::make_shared<Filter>();
+	filter = std::make_shared<Filter>((int)X.size(), (int)gui.slider(L"dimension")._get_valueInt());
+	filter->change(X, (int)gui.slider(L"dimension")._get_valueInt());
 }
 
 
 void Interface::update() {
 
 	isReaction();
+	filter->update();
 	setText();
 	draw();
 
@@ -42,10 +50,12 @@ void Interface::update() {
 void Interface::isReaction() {
 
 	
-	if (gui.button(L"filter").pushed)filter->update(); // Filter Update
+	if (gui.button(L"filter").pushed)filter->change(X, (int)gui.slider(L"dimension")._get_valueInt()); // Filter Update
 
 
 	if (gui.slider(L"degree").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
+
+	
 
 	
 	if (Input::MouseL.pressed) {
@@ -68,8 +78,9 @@ void Interface::isReaction() {
 
 void Interface::setText() {
 	
-	gui.text(L"degree_num").text = Format(L"•ª‰ğ”\: 2^", gui.slider(L"degree")._get_valueInt());
-	
+	gui.text(L"degree_num").text = Format(L"ŠK’²” 2^n: n = ", gui.slider(L"degree")._get_valueInt());
+	gui.text(L"dimension_num").text = Format(L"ŸŒ³” 2m+1: m = ", gui.slider(L"dimension")._get_valueInt());
+
 }
 
 

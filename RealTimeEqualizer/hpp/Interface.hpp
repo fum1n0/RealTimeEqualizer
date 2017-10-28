@@ -1,7 +1,7 @@
 #pragma once
 
-#include"../hpp/Public.hpp"
-#include"../hpp/Filter.hpp"
+
+#include"Filter.hpp"
 
 class Interface {
 
@@ -10,7 +10,6 @@ private:
 	Font font;
 	GUI gui;
 	std::vector<double>X;
-	std::vector<double>signal;
 	std::shared_ptr<Filter>filter;
 
 public:
