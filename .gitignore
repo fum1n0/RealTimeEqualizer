@@ -266,6 +266,9 @@ paket-files/
 __pycache__/
 *.pyc
 
-/RealTimeEqualizer/
-!/RealTimeEqualizer/cpp/
-!/RealTimeEqualizer/hpp/
+/RealTimeEqualizer/Engine/
+/RealTimeEqualizer/Example/
+
+# /RealTimeEqualizer/
+# !/RealTimeEqualizer/cpp/
+# !/RealTimeEqualizer/hpp/
