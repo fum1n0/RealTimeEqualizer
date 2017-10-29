@@ -23,7 +23,10 @@ void Filter::change(std::vector<double> X, int dimension) {
 	filter = std::vector<double>(degree, 0.0);
 	signal = ifft_execute();
 
-	for (int i = 0; i < filter.size(); i++)	filter[i] = signal[((int)filter.size() - dimension + i) % (int)filter.size()];
+	for (int i = 0; i < filter.size(); i++) {
+		if (i < filter.size() / 2)filter[i] = signal[(int)signal.size() - dimension + i] * (0.5 - 0.5*cos(2 * Pi*i / (double)filter.size()));
+		else filter[i] = signal[i - dimension] * (0.5 - 0.5*cos(2 * Pi*i / (double)filter.size()))* (0.5 - 0.5*cos(2 * Pi*i / (double)filter.size()));
+	}
 	
 	recordplay->setFilter(filter);
 }
@@ -99,6 +102,7 @@ std::vector<double> Filter::ifft_execute() {
 		}
 	}
 
+	
 	for (int k = 0; k < (int)re.size(); k++) {
 		re[k] /= (double)re.size();
 		im[k] /= (double)im.size();

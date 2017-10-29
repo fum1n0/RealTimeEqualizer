@@ -19,7 +19,8 @@ private:
 
 	std::vector<double>filter;
 
-	Wave x, y;
+	Wave y;
+	double tmp;
 
 public:
 	RecordPlay();

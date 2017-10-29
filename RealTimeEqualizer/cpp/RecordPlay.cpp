@@ -19,20 +19,7 @@ void RecordPlay::update() {
 	soundPos = sound.streamPosSample();
 
 	// ある程度変換後のサンプルがたまったら再生開始
-	if (!sound.isPlaying() && writePos > 8820){
-
-		// Filter処理
-		x = sound.getWave();
-		y = Wave(x.lengthSample, 0.0);
-		double tmp;
-		for (size_t i = 0; i < y.lengthSample; i++) {
-			tmp = 0.0;
-			for (int j = 0; j < (int)filter.size(); j++) {
-				if (0 <= i - j)tmp += (((double)x[i - j].left / 32768.0)*filter[j]);
-			}
-			y[i] = Waving::DoubleToSample(tmp);
-		}
-		sound.fill(y);
+	if (!sound.isPlaying() && writePos > 8820){		
 		sound.play();
 	}
 
@@ -57,7 +44,19 @@ void RecordPlay::update() {
 
 	while (readSize){
 		const size_t writeSize = Min(sound.lengthSample() - writePos, readSize);
-		sound.fill(writePos, &recorder.getWave()[readPos], writeSize);
+
+
+		// Filter処理
+		y = Wave(writeSize);
+		for (size_t i = 0; i < writeSize; i++) {
+			tmp = 0.0;
+			for (int j = 0; j < filter.size(); j++) {
+				if (0 <= (long)readPos - j)tmp += ((double)recorder.getWave()[readPos + i - j].left / 32768.0)*filter[j];
+			}
+			y[i] = Waving::DoubleToSample(tmp);
+		}
+		const WaveSample* src = &y[0];
+		sound.fill(writePos, src, writeSize);
 
 		writePos += writeSize;
 		if (writePos == BufferSize)
