@@ -273,3 +273,7 @@ __pycache__/
 # !/RealTimeEqualizer/cpp/
 # !/RealTimeEqualizer/hpp/
 /RealTimeEqualizer/RealTimeEqualizer_log.html
+/RealTimeEqualizer/filter.txt
+/RealTimeEqualizer/signal.txt
+/RealTimeEqualizer/cpp/Whisper.cpp
+/RealTimeEqualizer/hpp/Whisper.hpp

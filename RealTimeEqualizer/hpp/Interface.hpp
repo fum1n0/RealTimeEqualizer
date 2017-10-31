@@ -20,7 +20,7 @@ public:
 	void isReaction();
 	void setText();
 	int calcArea(int);
-	void setCoefficient(int);
+	void setCoefficient();
 	void draw();
 
 

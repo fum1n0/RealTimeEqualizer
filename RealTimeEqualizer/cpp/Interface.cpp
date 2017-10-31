@@ -27,6 +27,10 @@ Interface::Interface() {
 	gui.add(L"hr", GUIHorizontalLine::Create(1));
 	gui.horizontalLine(L"hr").style.color = Color(127);
 
+	gui.addln(L"vocoder_title", GUIText::Create(L"Vocoder", 300));
+	gui.addln(L"vocoder", GUIToggleSwitch::Create(L"オフ", L"オン", false));
+	gui.add(L"generator", GUIRadioButton::Create({L"ホワイトノイズ", L"ノコギリ波" }, 0u, true));
+	
 
 	X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
 	
@@ -51,17 +55,19 @@ void Interface::isReaction() {
 
 	
 	if (gui.button(L"filter").pushed)filter->change(X, (int)gui.slider(L"dimension")._get_valueInt()); // Filter Update
-
-
+	
 	if (gui.slider(L"degree").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
+	
+	if (gui.slider(L"degree").hasChanged || gui.slider(L"dimension").hasChanged) {
+		if (pow(2, gui.slider(L"degree")._get_valueInt()) < 2 * gui.slider(L"dimension")._get_valueInt() + 1) {
+			gui.slider(L"dimension").setValue((pow(2, gui.slider(L"degree")._get_valueInt())/2)-1);
+		}
+	}
 
 	
-
-	
-	if (Input::MouseL.pressed) {
-		if (!gui.style.visible) {
-			//Mouse::PreviousPos();
-			setCoefficient(calcArea(Mouse::Pos().x));
+	if (Input::MouseL.pressed){
+		if (!gui.style.visible){
+			setCoefficient();
 		}
 	}
 
@@ -70,7 +76,6 @@ void Interface::isReaction() {
 		if (gui.style.visible)gui.show(false);
 		else gui.show(true);
 	}
-
 	
 
 }
@@ -80,7 +85,10 @@ void Interface::setText() {
 	
 	gui.text(L"degree_num").text = Format(L"階調数 2^n: n = ", gui.slider(L"degree")._get_valueInt());
 	gui.text(L"dimension_num").text = Format(L"次元数 2m+1: m = ", gui.slider(L"dimension")._get_valueInt());
-
+	
+	// gui.radioButton(L"generator").num_items // ラジオボタンの総数
+	//uint64 test = gui.radioButton(L"generator").checkedItem.value(); // 選択してるラジオボタンID
+	
 }
 
 
@@ -95,17 +103,44 @@ int Interface::calcArea(int x) {
 	return index;
 }
 
-void Interface::setCoefficient(int index) {
+void Interface::setCoefficient() {
+
+
+	std::pair<int, double>prev, now, low, high;
+	double a; // 変化度
+
+	prev.first = calcArea(Mouse::PreviousPos().x);
+	now.first= calcArea(Mouse::Pos().x);
+	
+	if (prev.first < 0)prev.first = 0;
+	else if ((int)X.size() - 1 < prev.first)prev.first = (int)X.size() - 1;
+
+	if (now.first < 0)now.first = 0;
+	else if ((int)X.size() - 1 < now.first)now.first = (int)X.size() - 1;
+
+	prev.second = 1.0 - (Mouse::PreviousPosF().y / (double)Window::Height());
+	if (1.0 < prev.second)prev.second = 1.0;
+	else if (prev.second < 0.0)prev.second = 0.0;
+
+	now.second = 1.0 - (Mouse::PosF().y / (double)Window::Height());
+	if (1.0 < now.second)now.second = 1.0;
+	else if (now.second < 0.0)now.second = 0.0;
 
 	
-	if (index < 0 || X.size() <= index)return;
+	low = std::min(prev, now);
+	high = std::max(prev, now);
 
-	double amp = 1.0 - (Mouse::PosF().y / (double)Window::Height());
+	if (prev.first != now.first) {
+		a = (high.second - low.second) / (double)(high.first - low.first);
+		for (int i = low.first; i <= high.first; i++) {
+			X[i] = low.second + a*(i-low.first);
+		}
 
-	if (1.0 < amp)amp = 1.0;
-	else if (amp < 0.0)amp = 0.0;
+	}else{
+		X[low.first] = low.second;
+		X[high.first] = high.second;
+	}
 
-	X[index] = amp;
 
 }
 

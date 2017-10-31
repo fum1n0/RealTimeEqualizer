@@ -9,3 +9,4 @@
 #include<HamFramework.hpp>
 #include <iomanip>
 #include<fstream>
+#include<math.h>
