@@ -4,39 +4,20 @@
 #include"../hpp/LPC.hpp"
 
 
-LPC::LPC() {
-	Wave generate;
-	setLPC(1024, 128, generate);
-}
 
 
-LPC::LPC(int frameL, int frameT) {
 
-	if ((frameL & (frameL - 1)) != 0 || (frameT & (frameT - 1)) != 0) {
-		std::cout << "Constructor Error" << std::endl;
-		std::cout << "Set Default Number" << std::endl;
-		this->LPC::LPC();
-	}
-	//else setLPC(frameL, frameT);
+void LPC::setLPC(Wave generate) {
 	
-}
-
-
-void LPC::setLPC(int frameL, int frameT, Wave generate) {
-	
-
-	Frame_L = frameL;
-	
-
 	wav_zero = Wave(1); // 0-pound
-
 	wav_base = generate;
-	wav_base = erase_zeroAmp(wav_base);
+	Frame_L = (int)pow(2, floor(log2(generate.lengthSample)) + 1);
+	
 	length = wav_base.lengthSample;
 	
 	wav_zero[0] = Waving::DoubleToSample(0.0);
 
-	for (int m = 0; m < Frame_L; m++)wav_base.push_back(wav_zero[0]);
+	for (size_t m = generate.lengthSample; m < Frame_L; m++)wav_base.push_back(wav_zero[0]);
 
 	wav_pre = wav_base;
 	wav_ana = Wave(Frame_L);
@@ -44,69 +25,18 @@ void LPC::setLPC(int frameL, int frameT, Wave generate) {
 	// 高音強調
 	for (int m = 1; m < length; m++)
 		wav_pre[m] = Waving::DoubleToSample(((double)wav_base[m].left / 32768.0) - ((double)wav_base[m - 1].left / 32768.0) * pre_emphasis);
-
-
-	// Order = (int)(sound.samplingRate() / 1000) + 2;
-
-	signal = std::vector<double>(Frame_L, 0);
-
-	re = std::vector<double>(Frame_L, 0);;
-	im = std::vector<double>(Frame_L, 0);
 	
-	amp = std::vector<double>(Frame_L, 0); // Amp
-	power = std::vector<double>(Frame_L, 0);//power
-	dbv = std::vector<double>(Frame_L, 0); // dBV
-
-	r = std::vector<double>(Frame_L, 0); // 自己相関関数
-
-	a = std::vector<double>(Order + 1, 0); // 線形予測係数
-	b = std::vector<double>(Order + 1, 0); // 誤差信号係数
-	
-	e = std::vector<double>(Frame_L, 0); // 残差信号
-	res_auto = std::vector<double>(Frame_L, 0); // 残差信号の自己相関関数
-
-	
-	
-
 }
 
 
 
-Wave LPC::erase_zeroAmp(Wave& wav) {
-
-	Wave erase;
-	bool flag = true;
-	for (size_t i = 1; i < wav.lengthSample - 1; i++) {
-		flag = true;
-
-		if (wav[i - 1].left == wav[i].left) {
-			if (wav[i + 1].right == wav[i + 1].right) {
-				flag = false;
-			}
-		}
-
-		if (flag)erase.push_back(wav[i]);
-
-	}
-
-	erase.saveWAVE(L"erase.wav");
-
-	return erase;
-
-
-}
-
-
-void LPC::calc_formant(int indexFrame) {
-
-	nowIndexFrame = indexFrame;
-
-	LPC::init();
-	LPC::hanning_execute(indexFrame);
-	LPC::calc_ACF_FFT();
-	LPC::calc_Levinson_Durbin();
-	
-
+void LPC::calc_formant(Wave record) {
+	setLPC(record);
+	init();
+	hanning_execute();
+	calc_ACF_FFT();
+	calc_Levinson_Durbin();
+	calc_error();
 }
 
 
@@ -119,18 +49,16 @@ void LPC::init() {
 	power = std::vector<double>(Frame_L, 0);
 	dbv = std::vector<double>(Frame_L, 0);
 	
-	
-
 	a = std::vector<double>(Order + 1, 0);
 	b = std::vector<double>(Order + 1, 0);
 	
 	r = std::vector<double>(Frame_L, 0);
 	e = std::vector<double>(Frame_L, 0);
-	res_auto = std::vector<double>(Frame_L, 0);
+	
 	e_rms = 0.0;
 }
 
-void LPC::hanning_execute(int indexFrame) {
+void LPC::hanning_execute() {
 
 	for (int k = 0; k < Frame_L; k++) {
 		wav_ana[k] = Waving::DoubleToSample(((double)wav_pre[k].left / 32768.0) * (0.5 - 0.5*cos(2 * Pi*k / Frame_L)));
@@ -341,28 +269,5 @@ void LPC::calc_error() {
 	}
 
 	e_rms = sqrt(e_rms/(double)Frame_L);
-
-
-	// output file
-	std::string file_signal = "signal.txt";
-	std::ofstream writing_signal;
-	std::string file_y = "y.txt";
-	std::ofstream writing_y;
-	std::string file_e = "e.txt";
-	std::ofstream writing_e;	
-	
-	writing_signal.open(file_signal, std::ios::out);
-	writing_y.open(file_y, std::ios::out);
-	writing_e.open(file_e, std::ios::out);
-
-	for (int i = 0; i < Frame_L; i++) {
-		writing_signal << i << " " << signal[i] << std::endl;
-		writing_y << i << " " << y[i] << std::endl;
-		writing_e << i << " " << e[i] << std::endl;
-	}
-
-	writing_signal.close();
-	writing_y.close();
-	writing_e.close();
 
 }

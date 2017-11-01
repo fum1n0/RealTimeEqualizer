@@ -5,11 +5,11 @@
 class Generator {
 
 
-private:
+protected:
 
 	const double time = 1.0 / 44100.0;
-	std::vector<double> signal;
-	double freq;
+	int freq;
+	std::vector<double> noise;
 	std::vector<std::function<void()>>generate;
 
 public:
@@ -18,4 +18,6 @@ public:
 	void createWhiteNoise();
 	void createSawtooth();
 	void signalResize(size_t);
+	void setFreq(int);
+
 };

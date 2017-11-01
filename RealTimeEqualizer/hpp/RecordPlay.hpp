@@ -18,14 +18,16 @@ private:
 
 	std::vector<double>filter;
 
+	Wave x;
 	Wave y;
 	double tmp;
 
-	//std::shared_ptr<Vocoder>vocoder;
+	std::shared_ptr<Vocoder>vocoder;
 
-public:
+public:	
+
 	RecordPlay();
 	void update();
 	void setFilter(std::vector<double>);
-
+	void setVocoder(std::shared_ptr<Vocoder>);
 };

@@ -10,7 +10,7 @@ RecordPlay::RecordPlay() {
 	readPos = 0;
 	writePos = 0;
 	slow = false;
-	//vocoder = std::make_shared<Vocoder>();
+	
 }
 
 
@@ -44,19 +44,27 @@ void RecordPlay::update() {
 
 	while (readSize){
 		const size_t writeSize = Min(sound.lengthSample() - writePos, readSize);
-
-
-		// Filterèàóù
+				
+		x = Wave(writeSize);
 		y = Wave(writeSize);
+
+		for (size_t i = 0; i < writeSize; i++)x[i] = recorder.getWave()[readPos + i];
+	
+		if (vocoder->isExecute()) {
+			x = vocoder->execute(x);
+		}
+		// Filterèàóù
 		for (size_t i = 0; i < writeSize; i++) {
 			tmp = 0.0;
 			for (int j = 0; j < filter.size(); j++) {
-				if (0 <= (long)readPos - j)tmp += ((double)recorder.getWave()[readPos + i - j].left / 32768.0)*filter[j];
+				if (0 <= (long)readPos - j)tmp += ((double)x[i].left / 32768.0) * filter[j];
 			}
 			y[i] = Waving::DoubleToSample(tmp);
 		}
+		
 		const WaveSample* src = &y[0];
 		sound.fill(writePos, src, writeSize);
+
 
 		writePos += writeSize;
 		if (writePos == BufferSize)
@@ -78,4 +86,9 @@ void RecordPlay::update() {
 
 void RecordPlay::setFilter(std::vector<double> Filter) {
 	filter = Filter;
+}
+
+
+void RecordPlay::setVocoder(std::shared_ptr<Vocoder> voc) {
+	vocoder = voc;
 }

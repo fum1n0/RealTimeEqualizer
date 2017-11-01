@@ -37,11 +37,18 @@ Interface::Interface() {
 	font = Font(20);
 
 	filter = std::make_shared<Filter>((int)X.size(), (int)gui.slider(L"dimension_num")._get_valueInt());
-	filter->update(X, (int)gui.slider(L"dimension_num")._get_valueInt());
-
 	recordplay = std::make_shared<RecordPlay>();
-	recordplay->setFilter(filter->getFilter());
+	vocoder = std::make_shared<Vocoder>();
+	this->init();
 
+}
+
+
+void Interface::init() {
+	filter->update(X, (int)gui.slider(L"dimension_num")._get_valueInt());
+	recordplay->setFilter(filter->getFilter());
+	recordplay->setVocoder(vocoder);
+	vocoder->setFreq(gui.slider(L"freq_num")._get_valueInt());
 }
 
 
@@ -71,8 +78,14 @@ void Interface::isReaction() {
 		}
 	}
 
+	if (gui.slider(L"freq_num").hasChanged)vocoder->setFreq(gui.slider(L"freq_num")._get_valueInt());
 
-	//if (gui.toggleSwitch(L"isVocoder").isRight);
+	if (gui.toggleSwitch(L"isVocoder").isRight)vocoder->setExecute(true);
+	else vocoder->setExecute(false);
+
+	if (gui.radioButton(L"generator").hasChanged) {
+		vocoder->setGenerateId((int)gui.radioButton(L"generator").checkedItem.value());
+	}
 
 
 	if (Input::MouseL.pressed){
@@ -93,7 +106,7 @@ void Interface::isReaction() {
 
 void Interface::setText() {
 	
-	gui.text(L"degree_text").text = Format(L"ŠK’²” 2^n: n = ", gui.slider(L"degree_num")._get_valueInt());
+	gui.text(L"degree_text").text = Format(L"•ªŠ„” 2^n: n = ", gui.slider(L"degree_num")._get_valueInt());
 	gui.text(L"dimension_text").text = Format(L"ŽŸŒ³” 2m+1: m = ", gui.slider(L"dimension_num")._get_valueInt());
 	gui.text(L"freq_text").text = Format(L"Žü”g”: ", gui.slider(L"freq_num")._get_valueInt(),L"Hz");
 	// gui.radioButton(L"generator").num_items // ƒ‰ƒWƒIƒ{ƒ^ƒ“‚Ì‘”
@@ -179,6 +192,10 @@ void Interface::draw() {
 		font(L"X[" + Widen(std::to_string(index)) + L"]").draw(text_x, Mouse::Pos().y - 15);
 		font(Widen(str)).draw(text_x, Mouse::Pos().y + 15);
 	}
+
+	/*font(vocoder->getFreq()).draw(text_x, Mouse::Pos().y - 100);
+	font(recordplay->vocoder->getFreq()).draw(text_x, Mouse::Pos().y - 150);*/
+
 }
 
 

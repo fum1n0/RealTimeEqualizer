@@ -3,18 +3,21 @@
 #include"Generator.hpp"
 #include"LPC.hpp"
 
-class Vocoder : public LPC, Generator{
+class Vocoder : public LPC, public Generator{
 
 private:
 
-	bool execute = false;
-
+	bool doExecute = false;
+	int generateId;
 
 
 
 public:
 
 	void setExecute(bool);
+	void setGenerateId(int);
+	bool isExecute();
 
+	Wave execute(Wave);
 
 };

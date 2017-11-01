@@ -13,9 +13,6 @@ protected:
 	unsigned long long int length ; // 音声サンプル数
 	int Frame_L = 1024; // フレーム長
 	
-	long leg; // 周期数 = 音声サンプル数/フレーム周期
-	long nowIndexFrame; // 現解析中の周期
-
 	double pre_emphasis = 0.9; // 高音強調割合
 	double de_emphasis = 0.9; // 低音強調割合
 
@@ -42,23 +39,15 @@ protected:
 	std::vector<double>y; // 予測信号
 
 	std::vector<double>e; // 残差信号
-	std::vector<double>res_auto; // 残差信号の自己相関関数
+	
+public:
 		
 
-public:
-
-	LPC();
-	LPC(int, int);
-	
-
-	void setLPC(int, int, Wave);
-
-	Wave erase_zeroAmp(Wave&);
-
+	void setLPC(Wave);
 	void init();
-	void calc_formant(int);
+	void calc_formant(Wave);
 	
-	void hanning_execute(int);
+	void hanning_execute();
 	void fft_excute(std::vector<double>&, std::vector<double>&, std::vector<double>&, int);
 	void calc_ACF_FFT();
 	void calc_ACF_FFT(std::vector<double>&, std::vector<double>&);
