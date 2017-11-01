@@ -5,7 +5,8 @@
 
 
 LPC::LPC() {
-	setLPC(1024, 128);
+	Wave generate;
+	setLPC(1024, 128, generate);
 }
 
 
@@ -15,38 +16,24 @@ LPC::LPC(int frameL, int frameT) {
 		std::cout << "Constructor Error" << std::endl;
 		std::cout << "Set Default Number" << std::endl;
 		this->LPC::LPC();
-	}else setLPC(frameL, frameT);
+	}
+	//else setLPC(frameL, frameT);
 	
 }
 
 
-void LPC::setLPC(int frameL, int frameT) {
-		
-	while (sound.isEmpty() ) {
-		Optional<String> state = Dialog::GetOpenSound();
-		if (!state.has_value()) {
-			std::cout << "Sound Select Error" << std::endl;
-			continue;
-		}
-		sound = Sound(state.value());
-		Optional<AudioProperty> audio = Audio::GetProperty(state.value());
-		name = audio->title.narrow();
-		name = name.substr(0, name.size() - 4);
-	}
-
-	fileFormantFreq_Band = name + "_Formant.txt";
-	writing_FormantFreq_Band.open(fileFormantFreq_Band, std::ios::out);
+void LPC::setLPC(int frameL, int frameT, Wave generate) {
+	
 
 	Frame_L = frameL;
-	Frame_T = frameT;
+	
 
 	wav_zero = Wave(1); // 0-pound
 
-	wav_base = sound.getWave();
+	wav_base = generate;
 	wav_base = erase_zeroAmp(wav_base);
 	length = wav_base.lengthSample;
-	leg = (long)(length / Frame_T);
-
+	
 	wav_zero[0] = Waving::DoubleToSample(0.0);
 
 	for (int m = 0; m < Frame_L; m++)wav_base.push_back(wav_zero[0]);
@@ -78,17 +65,12 @@ void LPC::setLPC(int frameL, int frameT) {
 	e = std::vector<double>(Frame_L, 0); // 残差信号
 	res_auto = std::vector<double>(Frame_L, 0); // 残差信号の自己相関関数
 
-	lpc_gain = std::vector<double>(Frame_L, 0);
-	lpc_dbv = std::vector<double>(Frame_L, 0);;
-
-	formant_freq = std::vector<std::vector<double>>(leg + 1, std::vector<double>());
+	
 	
 
 }
 
-LPC::~LPC() {
-	writing_FormantFreq_Band.close();
-}
+
 
 Wave LPC::erase_zeroAmp(Wave& wav) {
 
@@ -137,8 +119,7 @@ void LPC::init() {
 	power = std::vector<double>(Frame_L, 0);
 	dbv = std::vector<double>(Frame_L, 0);
 	
-	lpc_gain = std::vector<double>(Frame_L, 0);
-	lpc_dbv = std::vector<double>(Frame_L, 0);
+	
 
 	a = std::vector<double>(Order + 1, 0);
 	b = std::vector<double>(Order + 1, 0);
@@ -152,7 +133,7 @@ void LPC::init() {
 void LPC::hanning_execute(int indexFrame) {
 
 	for (int k = 0; k < Frame_L; k++) {
-		wav_ana[k] = Waving::DoubleToSample(((double)wav_pre[indexFrame*Frame_T + k].left / 32768.0) * (0.5 - 0.5*cos(2 * Pi*k / Frame_L)));
+		wav_ana[k] = Waving::DoubleToSample(((double)wav_pre[k].left / 32768.0) * (0.5 - 0.5*cos(2 * Pi*k / Frame_L)));
 		signal[k] = wav_ana[k].left / 32768.0; // ハニング補正,正規化
 	}
 }
@@ -245,15 +226,12 @@ void LPC::calc_ACF_FFT() {
 
 	fft_excute(sig, re, im, 1); // フーリエ変換
 
-	std::string file_dbv = "txt/" + name + "_signal_dbv_" + std::to_string(nowIndexFrame) + ".txt";
-	std::ofstream writing_dbv;
-	writing_dbv.open(file_dbv, std::ios::out);
+	
 	for (int i = 0; i < Frame_L; i++) {
 		amp[i] = sqrt(re[i] * re[i] + im[i] * im[i]);
-		dbv[i] = 20 * log10(amp[i]);
-		writing_dbv << (double)sound.samplingRate()*i / (double)Frame_L << " " << dbv[i] << std::endl;
+		dbv[i] = 20 * log10(amp[i]);	
 	}
-	writing_dbv.close();
+	
 
 	for (int i = 0; i < Frame_L; i++)sig.push_back(0.0); // 0-padding
 

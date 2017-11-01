@@ -10,7 +10,7 @@ RecordPlay::RecordPlay() {
 	readPos = 0;
 	writePos = 0;
 	slow = false;
-
+	//vocoder = std::make_shared<Vocoder>();
 }
 
 

@@ -9,42 +9,46 @@ Interface::Interface() {
 	gui.setTitle(L"Config");
 		
 	gui.addln(L"filter", GUIButton::Create(L"フィルタ更新"));
-
+	
+	gui.add(L"hr", GUIHorizontalLine::Create(1));
+	gui.horizontalLine(L"hr").style.color = Color(127);
+	
+	gui.addln(L"degree_text", GUIText::Create(L"", 200));
+	gui.add(L"degree_num", GUISlider::Create(5, 11, 8, 150));
 
 	gui.add(L"hr", GUIHorizontalLine::Create(1));
 	gui.horizontalLine(L"hr").style.color = Color(127);
 		
-
-	gui.addln(L"degree_num", GUIText::Create(L"", 300));
-	gui.add(L"degree", GUISlider::Create(5, 11, 8, 100));
-
-	gui.add(L"hr", GUIHorizontalLine::Create(1));
-	gui.horizontalLine(L"hr").style.color = Color(127);
-		
-	gui.addln(L"dimension_num", GUIText::Create(L"", 300));
-	gui.add(L"dimension", GUISlider::Create(5, 50, 10, 100));
+	gui.addln(L"dimension_text", GUIText::Create(L"", 200));
+	gui.add(L"dimension_num", GUISlider::Create(5, 50, 10, 150));
 
 	gui.add(L"hr", GUIHorizontalLine::Create(1));
 	gui.horizontalLine(L"hr").style.color = Color(127);
 
-	gui.addln(L"vocoder_title", GUIText::Create(L"Vocoder", 300));
-	gui.addln(L"vocoder", GUIToggleSwitch::Create(L"オフ", L"オン", false));
+	gui.addln(L"vocoder_title", GUIText::Create(L"Vocoder", 200));
+	gui.addln(L"isVocoder", GUIToggleSwitch::Create(L"オフ", L"オン", false));
+	gui.addln(L"freq_text", GUIText::Create(L"", 150));
+	gui.addln(L"freq_num", GUISlider::Create(50, 1000, 250, 150));
 	gui.add(L"generator", GUIRadioButton::Create({L"ホワイトノイズ", L"ノコギリ波" }, 0u, true));
 	
 
-	X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
+	X = std::vector<double>((int64)pow(2,gui.slider(L"degree_num")._get_valueInt()), 1.0);
 	
 	font = Font(20);
 
-	filter = std::make_shared<Filter>((int)X.size(), (int)gui.slider(L"dimension")._get_valueInt());
-	filter->change(X, (int)gui.slider(L"dimension")._get_valueInt());
+	filter = std::make_shared<Filter>((int)X.size(), (int)gui.slider(L"dimension_num")._get_valueInt());
+	filter->update(X, (int)gui.slider(L"dimension_num")._get_valueInt());
+
+	recordplay = std::make_shared<RecordPlay>();
+	recordplay->setFilter(filter->getFilter());
+
 }
 
 
 void Interface::update() {
 
 	isReaction();
-	filter->update();
+	recordplay->update();
 	setText();
 	draw();
 
@@ -54,17 +58,23 @@ void Interface::update() {
 void Interface::isReaction() {
 
 	
-	if (gui.button(L"filter").pushed)filter->change(X, (int)gui.slider(L"dimension")._get_valueInt()); // Filter Update
+	if (gui.button(L"filter").pushed) {
+		filter->update(X, (int)gui.slider(L"dimension_num")._get_valueInt()); // Filter Update
+		recordplay->setFilter(filter->getFilter());
+	}
+
+	if (gui.slider(L"degree_num").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree_num")._get_valueInt()), 1.0);
 	
-	if (gui.slider(L"degree").hasChanged)X = std::vector<double>((int64)pow(2,gui.slider(L"degree")._get_valueInt()), 1.0);
-	
-	if (gui.slider(L"degree").hasChanged || gui.slider(L"dimension").hasChanged) {
-		if (pow(2, gui.slider(L"degree")._get_valueInt()) < 2 * gui.slider(L"dimension")._get_valueInt() + 1) {
-			gui.slider(L"dimension").setValue((pow(2, gui.slider(L"degree")._get_valueInt())/2)-1);
+	if (gui.slider(L"degree_num").hasChanged || gui.slider(L"dimension_num").hasChanged) {
+		if (pow(2, gui.slider(L"degree_num")._get_valueInt()) < 2 * gui.slider(L"dimension_num")._get_valueInt() + 1) {
+			gui.slider(L"dimension_num").setValue((pow(2, gui.slider(L"degree_num")._get_valueInt())/2)-1);
 		}
 	}
 
-	
+
+	//if (gui.toggleSwitch(L"isVocoder").isRight);
+
+
 	if (Input::MouseL.pressed){
 		if (!gui.style.visible){
 			setCoefficient();
@@ -83,9 +93,9 @@ void Interface::isReaction() {
 
 void Interface::setText() {
 	
-	gui.text(L"degree_num").text = Format(L"階調数 2^n: n = ", gui.slider(L"degree")._get_valueInt());
-	gui.text(L"dimension_num").text = Format(L"次元数 2m+1: m = ", gui.slider(L"dimension")._get_valueInt());
-	
+	gui.text(L"degree_text").text = Format(L"階調数 2^n: n = ", gui.slider(L"degree_num")._get_valueInt());
+	gui.text(L"dimension_text").text = Format(L"次元数 2m+1: m = ", gui.slider(L"dimension_num")._get_valueInt());
+	gui.text(L"freq_text").text = Format(L"周波数: ", gui.slider(L"freq_num")._get_valueInt(),L"Hz");
 	// gui.radioButton(L"generator").num_items // ラジオボタンの総数
 	//uint64 test = gui.radioButton(L"generator").checkedItem.value(); // 選択してるラジオボタンID
 	
@@ -102,6 +112,7 @@ int Interface::calcArea(int x) {
 
 	return index;
 }
+
 
 void Interface::setCoefficient() {
 
@@ -143,7 +154,6 @@ void Interface::setCoefficient() {
 
 
 }
-
 
 
 void Interface::draw() {

@@ -7,6 +7,7 @@
 #include<memory>
 #include<numeric>
 #include<HamFramework.hpp>
-#include <iomanip>
+#include<iomanip>
 #include<fstream>
 #include<math.h>
+#include<functional>

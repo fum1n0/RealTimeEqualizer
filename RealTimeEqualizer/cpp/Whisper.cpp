@@ -11,7 +11,7 @@ Whisper::Whisper(int frameL, int frameT) : LPC(frameL, frameT) {
 }
 
 void Whisper::setWhisperParameter() {
-	whisperName = name + "_whisper";
+	//whisperName = name + "_whisper";
 	whitenoise = std::vector<double>(Frame_L, 0);
 }
 
@@ -42,8 +42,8 @@ void Whisper::createWhisper() {
 			for (long k = 1; k<a.size(); k++) {
 				if (j >= k) whitenoise[j] -= a[k] * whitenoise[j - k];
 			}
-			whisperVoice[i*Frame_T + j] += whitenoise[j];
-			amp_e[i*Frame_T + j] += e[j];
+			whisperVoice[i + j] += whitenoise[j];
+			amp_e[i* + j] += e[j];
 		}
 	}
 

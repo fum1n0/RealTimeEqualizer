@@ -6,16 +6,13 @@ class LPC{
 
 protected:
 		
-	Sound sound; // 音声ファイル
-	std::string name; // 音声ファイル名
-
 	Wave wav_base; // 元波形
 	Wave wav_pre; // 高音強調処理後波形
 	Wave wav_zero; // 0-pound
 
 	unsigned long long int length ; // 音声サンプル数
 	int Frame_L = 1024; // フレーム長
-	int Frame_T = 128; // フレーム周期
+	
 	long leg; // 周期数 = 音声サンプル数/フレーム周期
 	long nowIndexFrame; // 現解析中の周期
 
@@ -23,8 +20,6 @@ protected:
 	double de_emphasis = 0.9; // 低音強調割合
 
 	double e_rms = 0.0; // 二乗平均平方根
-
-	double pitch_freq; // ピッチ周波数
 
 	Wave wav_ana; // 解析用フレーム長音声切り出し部分
 	
@@ -48,24 +43,15 @@ protected:
 
 	std::vector<double>e; // 残差信号
 	std::vector<double>res_auto; // 残差信号の自己相関関数
-
-	std::vector<double>lpc_gain; // lpcの周波数応答
-	std::vector<double>lpc_dbv; // lpc周波数応答のdBV
-
-	std::vector<std::vector<double>> formant_freq;
-	std::vector<std::pair<double, double>>freq_band;
 		
-	std::string fileFormantFreq_Band;
-	std::ofstream writing_FormantFreq_Band;
-	
 
 public:
 
 	LPC();
 	LPC(int, int);
-	~LPC();
+	
 
-	void setLPC(int, int);
+	void setLPC(int, int, Wave);
 
 	Wave erase_zeroAmp(Wave&);
 

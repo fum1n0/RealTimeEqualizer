@@ -1,7 +1,6 @@
 #pragma once
 
-#include"Public.hpp"
-
+#include"Vocoder.hpp"
 
 class RecordPlay {
 
@@ -21,6 +20,8 @@ private:
 
 	Wave y;
 	double tmp;
+
+	//std::shared_ptr<Vocoder>vocoder;
 
 public:
 	RecordPlay();

@@ -2,6 +2,7 @@
 
 
 #include"Filter.hpp"
+#include"RecordPlay.hpp"
 
 class Interface {
 
@@ -11,6 +12,7 @@ private:
 	GUI gui;
 	std::vector<double>X;
 	std::shared_ptr<Filter>filter;
+	std::shared_ptr<RecordPlay>recordplay;
 
 public:
 

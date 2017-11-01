@@ -7,16 +7,11 @@ Filter::Filter(int size, int dimension) {
 
 	signal = std::vector<double>(2*size, 0.0);
 	filter = std::vector<double>(2 * dimension + 1, 0.0);
-	recordplay = std::make_shared<RecordPlay>();
 }
 
 
-void Filter::update() {
-	recordplay->update();
-}
 
-
-void Filter::change(std::vector<double> X, int dimension) {
+void Filter::update(std::vector<double> X, int dimension) {
 
 	freq = X;
 	degree = 2 * dimension + 1;
@@ -28,7 +23,7 @@ void Filter::change(std::vector<double> X, int dimension) {
 		else filter[i] = signal[i - dimension] * (0.5 - 0.5*cos(2 * Pi*i / (double)filter.size()))* (0.5 - 0.5*cos(2 * Pi*i / (double)filter.size()));
 	}
 	
-	recordplay->setFilter(filter);
+	
 }
 
 
@@ -112,3 +107,6 @@ std::vector<double> Filter::ifft_execute() {
 }
 
 
+std::vector<double> Filter::getFilter() {
+	return filter;
+}
