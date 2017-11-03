@@ -32,14 +32,11 @@ Wave Vocoder::execute(Wave voice) {
 	generate[generateId]();
 
 	for (size_t i = 0; i < tmp.size(); i++)tmp[i] = noise[i] * e_rms ;
-	//tmp = noise;
-
+	
 	for (size_t i = 0; i<voice.lengthSample; i++) {
-		
 		for (size_t j = 1; j<a.size(); j++) {
 			if (i >= j) tmp[i] -= a[j] * tmp[i - j];
 		}
-		//wav[i] = Waving::DoubleToSample(tmp[i]); 
 	}
 
 	for (size_t i = 1; i < tmp.size(); i++)tmp[i] += tmp[i - 1] * 0.9;

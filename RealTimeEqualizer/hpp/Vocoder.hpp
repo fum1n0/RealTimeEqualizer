@@ -10,8 +10,6 @@ private:
 	bool doExecute = false;
 	int generateId;
 
-
-
 public:
 
 	void setExecute(bool);

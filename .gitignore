@@ -74,7 +74,7 @@ artifacts/
 *.sln
 *.vcxproj
 *.vcxproj.filters
-
+*.wav
 
 # Chutzpah Test files
 _Chutzpah*
